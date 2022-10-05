@@ -62,22 +62,39 @@ class DispatchView(APIView):
     parser_classes = [MultiPartParser]
 
     def get(self, request):
-        snippets = Dispatch.objects.all()
+        snippets = Dispatch.objects.filter(order__user=str(request.user.id))
         serializer = DispatchSerializer(snippets, many=True)
         return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
         serializer = DispatchSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            order = serializer.validated_data.get('order')
+            if order.user.id == request.user.id:
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(data='enter a valid order', status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class OrderView(generics.ListCreateAPIView):
+class OrderView(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = OrderSerializer
-    queryset = Order.objects.all()
+
+    def get(self, request):
+        snippets = Order.objects.filter(user=str(request.user.id))
+        serializer = OrderSerializer(snippets, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        serializer = OrderSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data.get('user')
+            if user.id == request.user.id:
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(data='enter a valid user', status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class DispatchDetail(generics.RetrieveUpdateDestroyAPIView):
