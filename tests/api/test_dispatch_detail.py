@@ -45,4 +45,5 @@ def test_delete_dispatch_by_other_user(user_factory, order_factory, dispatch_fac
     client = authed_token_client_generator(user2)
     response = client.delete(reverse("dispatch_detail", kwargs={'pk': dispatch.id}))
     assert response.json()['detail'] == "You do not have permission to perform this action."
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
