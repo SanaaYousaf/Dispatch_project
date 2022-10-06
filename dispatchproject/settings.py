@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-f8a$g)a4#&53#pz82@*jqe-c=#z(l4myg_i(-^=bz1cg%acr*$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["ec2-3-84-3-100.compute-1.amazonaws.com"]
 
 AUTH_USER_MODEL = 'dispatch.User'
 
